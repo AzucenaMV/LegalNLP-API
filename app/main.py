@@ -1,19 +1,20 @@
-from typing import Optional, List
-from fastapi import FastAPI, Depends
-from datetime import datetime
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
 import uvicorn
+import regex
 import nltk
 import types
 import spacy
+from typing import Optional, List
+from datetime import datetime
+from pydantic import BaseModel
+from collections import OrderedDict
+from models.Leg import Leg
+from models.NamedEntity import NamedEntity
+from models.Abrv import Abrv
 import lexnlp.extract.en.definitions
 import lexnlp.extract.en.durations
 import lexnlp.extract.en.regulations
 import lexnlp.extract.en.conditions
 import lexnlp.extract.en.constraints
-from lexnlp.extract.en.entities.company_detector import CompanyDetector
 from lexnlp.extract.en.entities.nltk_maxent import get_company_annotations
 import lexnlp.extract.en.acts
 import lexnlp.extract.en.dates
@@ -25,13 +26,11 @@ import lexnlp.extract.en.entities.nltk_maxent
 import lexnlp.extract.en.entities.nltk_re
 from blackstone.pipeline.abbreviations import AbbreviationDetector
 from blackstone.utils.legislation_linker import extract_legislation_relations
-from models.Leg import Leg
-from models.NamedEntity import NamedEntity
-from models.Abrv import Abrv
-from models.FCAContent import FCAContent
 from blackstone.rules import CITATION_PATTERNS
-import regex
-from collections import OrderedDict
+
+from fastapi import FastAPI, Depends
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 class Request(BaseModel):
     text: str
@@ -92,40 +91,10 @@ def Definition(item: Request):
 
 @app.post("/duration")
 def Duration(item: Request):
-    return JSONResponse(content=jsonable_encoder(list(lexnlp.extract.en.durations.get_durations(item.text))))
+    print(item.text)
+    print(lexnlp.extract.en.durations.get_durations(item.text))
+    return JSONResponse(content=jsonable_encoder(list(lexnlp.extract.en.durations.get_durations(item.text, return_sources = True))))
 
-
-@app.post("/fca")
-def FCA(item: Request):
-
-    baseUrl = "https://www.handbook.fca.org.uk/handbook/"
-
-    matches = regex.findall("[A-Z]+\s(?>Sch\s)?(?>Ann\s)?(?>TP\s)?\d+[A-Z]?(?>\.\d+)*-?\s?[A-Z]?", item.text)
-
-    # Strip whitespace from matches
-    stripped = [s.strip() for s in matches]
-
-    # Get only unique values
-    unique = list(dict.fromkeys(stripped))
-
-    items = []  # type: List[FCAContent]
-
-    for value in unique:
-
-        section = regex.findall("[A-Z]+\s(?>Sch\s)?(?>Ann\s)?(?>TP\s)?", value)[0].split()
-        sub = regex.findall("\d+[A-Z]?(?>\.\d+)*-?\s?[A-Z]?", value)[0].split('.')
-
-        url = baseUrl + section[0] + "/"
-
-        if len(section) == 2:
-            url = url + section[1] + "/"
-
-        if len(sub) != 0:
-            url = url + sub[0] + "/" + sub[0] + ".html"
-        
-        items.append(FCAContent(value, findall(item.text, value), url))
-
-    return JSONResponse(content=jsonable_encoder(items))
 
 @app.post("/legislation")
 def Legislation(item: Request):
@@ -180,4 +149,4 @@ def findall(text, sub):
     ]
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=80)
+    uvicorn.run(app, host="0.0.0.0", port=5001)
