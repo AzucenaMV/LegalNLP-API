@@ -1,18 +1,23 @@
 anyio==3.6.1
 asgiref==3.4.1
 backports.zoneinfo==0.2.1
+blackstone==0.1.15
+blis==0.2.4
 certifi==2021.5.30
 cffi==1.15.0
 chardet==3.0.4
 click==8.0.4
+conllu==4.4.2
 contextlib2==21.6.0
 contextvars==2.4
 cryptography==37.0.2
+cymem==2.0.6
 dataclasses==0.8
 datefinder-lexpredict==0.6.2.1
 dateparser==0.7.2
 docopt==0.6.2
 ecdsa==0.17.0
+en-blackstone-proto @ https://blackstone-model.s3-eu-west-1.amazonaws.com/en_blackstone_proto-0.0.1.tar.gz
 fastapi==0.78.0
 fastapi-cloudauth==0.4.3
 gensim==3.8.3
@@ -24,10 +29,13 @@ importlib-resources==5.4.0
 jellyfish==0.6.1
 joblib==0.14.0
 lexnlp==1.8.0
+murmurhash==1.0.7
 nltk==3.5
 num2words==0.5.10
 numpy==1.19.1
 pandas==0.24.2
+plac==0.9.6
+preshed==2.0.1
 pyasn1==0.4.8
 pycountry==20.7.3
 pycparser==2.21
@@ -45,7 +53,10 @@ scipy==1.5.1
 six==1.16.0
 smart-open==6.0.0
 sniffio==1.2.0
+spacy==2.1.8
+srsly==1.0.5
 starlette==0.19.1
+thinc==7.0.8
 threadpoolctl==3.1.0
 tqdm==4.64.0
 typing_extensions==4.1.1
@@ -55,4 +66,5 @@ Unidecode==1.1.1
 urllib3==1.25.11
 us==2.0.2
 uvicorn==0.16.0
+wasabi==0.9.1
 zipp==3.6.0
