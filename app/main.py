@@ -2,7 +2,6 @@ import uvicorn
 import regex
 import nltk
 import types
-import spacy
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
@@ -35,27 +34,15 @@ from fastapi.encoders import jsonable_encoder
 class Request(BaseModel):
     text: str
 
-nlp = spacy.load("en_blackstone_proto")
-
-abbreviation_pipe = AbbreviationDetector(nlp)
-nlp.add_pipe(abbreviation_pipe)
+#nlp = spacy.load("en_blackstone_proto")
+#abbreviation_pipe = AbbreviationDetector(nlp)
+#nlp.add_pipe(abbreviation_pipe)
 
 app = FastAPI()
 
 @app.get("/")
 def read_root():
     return {"Status": "Working"}
-
-@app.post("/abbreviation")
-def Abbreviation(item: Request):
-    abbreviation = []
-
-    doc = nlp(item.text) 
-
-    for abrv in doc._.abbreviations:
-        abbreviation.append(Abrv(abrv.string, abrv.start_char, abrv.end_char, abrv._.long_form.string))
-
-    return JSONResponse(content=jsonable_encoder(abbreviation))
 
 @app.post("/act")
 def Act(item: Request):
@@ -95,36 +82,10 @@ def Duration(item: Request):
     print(lexnlp.extract.en.durations.get_durations(item.text))
     return JSONResponse(content=jsonable_encoder(list(lexnlp.extract.en.durations.get_durations(item.text, return_sources = True))))
 
-
-@app.post("/legislation")
-def Legislation(item: Request):
-
-    doc = nlp(item.text) 
-    relations = extract_legislation_relations(doc)
-    
-    legislations = []
-    
-    for provision, provision_url, instrument, instrument_url in relations:
-        legislations.append(Leg(provision.text,provision_url,instrument.text,instrument_url))
-
-    return JSONResponse(content=jsonable_encoder(legislations))
-
-
 @app.post("/money")
 def Money(item: Request):
     return JSONResponse(content=jsonable_encoder(list(lexnlp.extract.en.money.get_money(item.text, True, 4))))
 
-
-@app.post("/named-entity")
-def Ner(item: Request):
-
-    doc = nlp(item.text) 
-    namedEntities = []
-
-    for entity in doc.ents:
-        namedEntities.append(NamedEntity(entity.text,entity.label_))
-
-    return JSONResponse(content=jsonable_encoder(namedEntities))
 
 @app.post("/regulation")
 def Regulation(item: Request):
