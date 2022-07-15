@@ -6,9 +6,7 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 from collections import OrderedDict
-from models.Leg import Leg
-from models.NamedEntity import NamedEntity
-from models.Abrv import Abrv
+
 import lexnlp.extract.en.definitions
 import lexnlp.extract.en.durations
 import lexnlp.extract.en.regulations
@@ -23,9 +21,6 @@ import lexnlp.extract.en.money
 import lexnlp.extract.en.amounts
 import lexnlp.extract.en.entities.nltk_maxent
 import lexnlp.extract.en.entities.nltk_re
-from blackstone.pipeline.abbreviations import AbbreviationDetector
-from blackstone.utils.legislation_linker import extract_legislation_relations
-from blackstone.rules import CITATION_PATTERNS
 
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
@@ -33,10 +28,6 @@ from fastapi.encoders import jsonable_encoder
 
 class Request(BaseModel):
     text: str
-
-#nlp = spacy.load("en_blackstone_proto")
-#abbreviation_pipe = AbbreviationDetector(nlp)
-#nlp.add_pipe(abbreviation_pipe)
 
 app = FastAPI()
 
